@@ -1105,9 +1105,44 @@
             </select>
           </div>
           <div class="reg-field">
-            <label data-i18n="f_dest">DESTINATION <span class="reg-required">*</span></label>
-            <input type="text" id="regDest" dir="auto" placeholder="Ville, pays">
+            <label data-i18n="f_dest_city">VILLE DE DESTINATION <span class="reg-required">*</span></label>
+            <input type="text" id="regDestCity" dir="auto" placeholder="Ex: Dallas">
           </div>
+          <div class="reg-field">
+            <label data-i18n="f_dest_country">PAYS DE DESTINATION <span class="reg-required">*</span></label>
+            <select id="regDestCountry">
+              <option value="" data-i18n="country_select">-- Sélectionner --</option>
+              <option value="France" data-i18n="country_france">France</option>
+              <option value="Belgique" data-i18n="country_belgique">Belgique</option>
+              <option value="Pays-Bas" data-i18n="country_paysbas">Pays-Bas</option>
+              <option value="Allemagne" data-i18n="country_allemagne">Allemagne</option>
+              <option value="Espagne" data-i18n="country_espagne">Espagne</option>
+              <option value="Italie" data-i18n="country_italie">Italie</option>
+              <option value="Royaume-Uni" data-i18n="country_royaumeuni">Royaume-Uni</option>
+              <option value="Suisse" data-i18n="country_suisse">Suisse</option>
+              <option value="Hongrie" data-i18n="country_hongrie">Hongrie</option>
+              <option value="Canada" data-i18n="country_canada">Canada</option>
+              <option value="États-Unis" data-i18n="country_etatsunis">États-Unis</option>
+              <option value="Émirats Arabes Unis" data-i18n="country_eau">Émirats Arabes Unis</option>
+              <option value="Turquie" data-i18n="country_turquie">Turquie</option>
+              <option value="Qatar" data-i18n="country_qatar">Qatar</option>
+              <option value="Autre" data-i18n="country_other">Autre</option>
+            </select>
+            <input type="text" id="regDestCountryOther" placeholder="Préciser le pays" style="display:none; margin-top:6px;">
+          </div>
+          <script>
+            // "Autre" reveals a free-text field, same pattern as the staff
+            // "Ajouter une demande" form (src/views/client_new.ejs) - lets a
+            // visitor type a country outside the curated airport list
+            // (services/airports.js) without blocking the form.
+            (function() {
+              var sel = document.getElementById('regDestCountry');
+              var other = document.getElementById('regDestCountryOther');
+              sel.addEventListener('change', function() {
+                other.style.display = sel.value === 'Autre' ? '' : 'none';
+              });
+            })();
+          </script>
           <div class="reg-field">
             <label data-i18n="f_date">DATE D'EXPÉDITION SOUHAITÉE</label>
             <input type="date" id="regDate">
@@ -1276,7 +1311,7 @@ const translations = {
     reg_title: "Formulaire de demande détaillée",
     reg_sub: "Remplissez ces informations une seule fois — cela nous évite plusieurs échanges pour préparer votre devis. Une fois envoyé, votre message s'ouvre pré-rempli dans votre email ou WhatsApp ; il vous suffit de l'envoyer.",
     f_name: "NOM / SOCIÉTÉ *", f_phone: "TÉLÉPHONE / WHATSAPP *", f_email: "EMAIL *",
-    f_city: "VILLE DE DÉPART *", f_dest: "DESTINATION *", f_date: "DATE D'EXPÉDITION SOUHAITÉE",
+    f_city: "VILLE DE DÉPART *", f_dest: "DESTINATION *", f_dest_city: "VILLE DE DESTINATION *", f_dest_country: "PAYS DE DESTINATION *", f_date: "DATE D'EXPÉDITION SOUHAITÉE",
     f_nature: "NATURE DE LA MARCHANDISE *", f_colis: "NOMBRE DE COLIS", f_poids: "POIDS BRUT APPROX. TOTAL, TOUS COLIS (KG) *",
     f_dimunit: "UNITÉ DES DIMENSIONS", unit_cm: "Centimètres (cm)", unit_m: "Mètres (m)",
     f_longueur: "LONGUEUR", f_largeur: "LARGEUR", f_hauteur: "HAUTEUR",
@@ -1286,6 +1321,7 @@ const translations = {
     gerbable_select: "-- Sélectionner --", gerbable_yes: "Oui", gerbable_no: "Non",
     f_ice: "ICE (SI SOCIÉTÉ)", f_notes: "NOTES COMPLÉMENTAIRES",
     city_casa: "Casablanca", city_mar: "Marrakech", city_fes: "Fès", city_tan: "Tanger", city_rab: "Rabat", city_other: "Autre",
+    country_select: "-- Sélectionner --", country_france: "France", country_belgique: "Belgique", country_paysbas: "Pays-Bas", country_allemagne: "Allemagne", country_espagne: "Espagne", country_italie: "Italie", country_royaumeuni: "Royaume-Uni", country_suisse: "Suisse", country_hongrie: "Hongrie", country_canada: "Canada", country_etatsunis: "États-Unis", country_eau: "Émirats Arabes Unis", country_turquie: "Turquie", country_qatar: "Qatar", country_other: "Autre",
     reg_send_wa: "Envoyer par WhatsApp", reg_send_email: "Envoyer par Email",
     reg_note: "Les champs marqués * sont nécessaires pour préparer votre devis. Le bouton choisi ouvrira votre application avec le message déjà rempli — il ne vous reste qu'à l'envoyer.",
     reg_error: "Merci de remplir au minimum : nom, téléphone, email, ville de départ, destination, nature de la marchandise, poids et si la marchandise est gerbable.",
@@ -1365,7 +1401,7 @@ const translations = {
     reg_title: "Detailed request form",
     reg_sub: "Fill this in once — it saves us a few rounds of back-and-forth to prepare your quote. Once sent, your message opens pre-filled in your email or WhatsApp app; just hit send.",
     f_name: "NAME / COMPANY *", f_phone: "PHONE / WHATSAPP *", f_email: "EMAIL *",
-    f_city: "DEPARTURE CITY *", f_dest: "DESTINATION *", f_date: "REQUESTED SHIPPING DATE",
+    f_city: "DEPARTURE CITY *", f_dest: "DESTINATION *", f_dest_city: "DESTINATION CITY *", f_dest_country: "DESTINATION COUNTRY *", f_date: "REQUESTED SHIPPING DATE",
     f_nature: "NATURE OF GOODS *", f_colis: "NUMBER OF PACKAGES", f_poids: "APPROX. TOTAL GROSS WEIGHT, ALL PACKAGES (KG) *",
     f_dimunit: "DIMENSION UNIT", unit_cm: "Centimeters (cm)", unit_m: "Meters (m)",
     f_longueur: "LENGTH", f_largeur: "WIDTH", f_hauteur: "HEIGHT",
@@ -1375,6 +1411,7 @@ const translations = {
     gerbable_select: "-- Select --", gerbable_yes: "Yes", gerbable_no: "No",
     f_ice: "ICE (BUSINESS ID, IF APPLICABLE)", f_notes: "ADDITIONAL NOTES",
     city_casa: "Casablanca", city_mar: "Marrakech", city_fes: "Fez", city_tan: "Tangier", city_rab: "Rabat", city_other: "Other",
+    country_select: "-- Select --", country_france: "France", country_belgique: "Belgium", country_paysbas: "Netherlands", country_allemagne: "Germany", country_espagne: "Spain", country_italie: "Italy", country_royaumeuni: "United Kingdom", country_suisse: "Switzerland", country_hongrie: "Hungary", country_canada: "Canada", country_etatsunis: "United States", country_eau: "United Arab Emirates", country_turquie: "Turkey", country_qatar: "Qatar", country_other: "Other",
     reg_send_wa: "Send via WhatsApp", reg_send_email: "Send via Email",
     reg_note: "Fields marked * are needed to prepare your quote. The button you choose will open your app with the message already filled in — you just need to send it.",
     reg_error: "Please fill in at least: name, phone, email, departure city, destination, nature of goods, weight, and whether the goods are stackable.",
@@ -1454,7 +1491,7 @@ const translations = {
     reg_title: "استمارة طلب مفصلة",
     reg_sub: "املأوا هذه المعلومات مرة واحدة — يوفر ذلك علينا عدة تبادلات لتحضير عرض السعر. بمجرد الإرسال، تفتح رسالتكم جاهزة في تطبيق البريد الإلكتروني أو واتساب، ولا يبقى لكم سوى إرسالها.",
     f_name: "الاسم / الشركة *", f_phone: "الهاتف / واتساب *", f_email: "البريد الإلكتروني *",
-    f_city: "مدينة الانطلاق *", f_dest: "الوجهة *", f_date: "تاريخ الشحن المطلوب",
+    f_city: "مدينة الانطلاق *", f_dest: "الوجهة *", f_dest_city: "مدينة الوجهة *", f_dest_country: "بلد الوجهة *", f_date: "تاريخ الشحن المطلوب",
     f_nature: "نوع البضاعة *", f_colis: "عدد الطرود", f_poids: "الوزن الإجمالي التقريبي لجميع الطرود (كغ) *",
     f_dimunit: "وحدة القياس", unit_cm: "سنتيمتر (سم)", unit_m: "متر (م)",
     f_longueur: "الطول", f_largeur: "العرض", f_hauteur: "الارتفاع",
@@ -1464,6 +1501,7 @@ const translations = {
     gerbable_select: "-- اختر --", gerbable_yes: "نعم", gerbable_no: "لا",
     f_ice: "ICE (إن وجدت الشركة)", f_notes: "ملاحظات إضافية",
     city_casa: "الدار البيضاء", city_mar: "مراكش", city_fes: "فاس", city_tan: "طنجة", city_rab: "الرباط", city_other: "أخرى",
+    country_select: "-- اختر --", country_france: "فرنسا", country_belgique: "بلجيكا", country_paysbas: "هولندا", country_allemagne: "ألمانيا", country_espagne: "إسبانيا", country_italie: "إيطاليا", country_royaumeuni: "المملكة المتحدة", country_suisse: "سويسرا", country_hongrie: "المجر", country_canada: "كندا", country_etatsunis: "الولايات المتحدة", country_eau: "الإمارات العربية المتحدة", country_turquie: "تركيا", country_qatar: "قطر", country_other: "أخرى",
     reg_send_wa: "إرسال عبر واتساب", reg_send_email: "إرسال عبر البريد الإلكتروني",
     reg_note: "الحقول المشار إليها بـ * ضرورية لتحضير عرض السعر. سيفتح الزر الذي تختارونه تطبيقكم مع الرسالة جاهزة — لا يبقى سوى إرسالها.",
     reg_error: "يرجى ملء الحد الأدنى: الاسم، الهاتف، البريد الإلكتروني، مدينة الانطلاق، الوجهة، نوع البضاعة، الوزن، وهل البضاعة قابلة للتكديس.",
@@ -1700,7 +1738,14 @@ function submitRegistration(channel){
   const phone = phoneNumber ? `${phoneCode} ${phoneNumber}` : '';
   const email = val('regEmail');
   const city = document.getElementById('regCity').value;
-  const dest = val('regDest');
+  // Destination is now city + country (so the dashboard can auto-suggest
+  // nearby arrival airports instead of a fixed European list - see
+  // backend/src/services/airports.js). "Autre" swaps in the free-text field,
+  // same pattern as the staff "Ajouter une demande" form.
+  const destCity = val('regDestCity');
+  const regDestCountrySel = document.getElementById('regDestCountry');
+  const destCountry = regDestCountrySel.value === 'Autre' ? val('regDestCountryOther') : regDestCountrySel.value;
+  const dest = (destCity && destCountry) ? `${destCity}, ${destCountry}` : (destCity || destCountry);
   const date = val('regDate');
   const nature = val('regNature');
   const colis = val('regColis');
@@ -1727,7 +1772,7 @@ function submitRegistration(channel){
   const notes = val('regNotes');
 
   const errorEl = document.getElementById('regError');
-  if(!name || !phone || !email || !city || !dest || !nature || !poids || !gerbable){
+  if(!name || !phone || !email || !city || !destCity || !destCountry || !nature || !poids || !gerbable){
     errorEl.style.display = 'block';
     return;
   }
@@ -1755,7 +1800,7 @@ function submitRegistration(channel){
   fetch(BACKEND_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
-    body: JSON.stringify({ name, phone, email, city, destination: dest, preferredDate: date, nature, packages: colis, weightKg: poids, longueur, largeur, hauteur, dimensions, volume, gerbable, ice, notes })
+    body: JSON.stringify({ name, phone, email, city, destination: dest, destinationCity: destCity, destinationCountry: destCountry, preferredDate: date, nature, packages: colis, weightKg: poids, longueur, largeur, hauteur, dimensions, volume, gerbable, ice, notes })
   }).catch(() => { /* silent - WhatsApp/email fallback below still works */ });
 
   const L = regLabels[currentLang] || regLabels.fr;
@@ -1810,10 +1855,12 @@ function submitRegistration(channel){
   // back (this is a single-page app, so the DOM/state persists - it's not a
   // fresh page load) shows a clean, ready-to-fill form instead of the old
   // values with the buttons stuck disabled.
-  ['regName','regPhoneNumber','regEmail','regDest','regDate','regNature','regColis','regPoids','regVolume','regIce','regNotes'].forEach(id => {
+  ['regName','regPhoneNumber','regEmail','regDestCity','regDestCountryOther','regDate','regNature','regColis','regPoids','regVolume','regIce','regNotes'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('regCity').selectedIndex = 0;
+  document.getElementById('regDestCountry').selectedIndex = 0;
+  document.getElementById('regDestCountryOther').style.display = 'none';
   document.getElementById('regPhoneCode').selectedIndex = 0;
   document.getElementById('regGerbable').selectedIndex = 0;
   document.getElementById('regDimUnit').selectedIndex = 0;

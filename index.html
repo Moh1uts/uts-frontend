@@ -655,6 +655,40 @@
     outline-offset:1px;
   }
   .reg-field textarea{ resize:vertical; min-height:80px; }
+  /* Multi-package dimensions ("+ Ajouter un colis") - a grid row per
+     package. min-width:0 on the inputs is required or number inputs'
+     browser-default intrinsic width pushes the whole row (and the remove
+     button) past the form's edge instead of shrinking to fit. */
+  .reg-box-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr 60px auto;
+    gap:8px;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  .reg-box-row input{ min-width:0; width:100%; }
+  .reg-box-qty-wrap{
+    display:flex;
+    align-items:center;
+    gap:3px;
+    min-width:0;
+  }
+  .reg-box-qty-x{
+    color:var(--navy-soft);
+    font-size:14px;
+    font-weight:bold;
+    flex-shrink:0;
+  }
+  .reg-box-qty{ text-align:center; padding:11px 4px !important; }
+  .reg-box-remove{
+    flex-shrink:0;
+    white-space:nowrap;
+    padding:10px 12px !important;
+  }
+  @media (max-width:640px){
+    .reg-box-row{ grid-template-columns:1fr 1fr 60px; row-gap:6px; }
+    .reg-box-row .reg-box-remove{ grid-column:1/-1; justify-self:end; }
+  }
   .reg-submit-row{
     margin-top:26px;
     display:flex;
@@ -1078,6 +1112,12 @@
             <label data-i18n="f_date">DATE D'EXPÉDITION SOUHAITÉE</label>
             <input type="date" id="regDate">
           </div>
+          <script>
+            // No past dates - set every time the page loads so "today" is
+            // always current, not whatever date this file happened to be
+            // cached/generated on.
+            document.getElementById('regDate').min = new Date().toISOString().slice(0, 10);
+          </script>
           <div class="reg-field full">
             <label data-i18n="f_nature">NATURE DE LA MARCHANDISE <span class="reg-required">*</span></label>
             <input type="text" id="regNature" dir="auto" placeholder="Ex : huile d'argan, textile, pièces automobiles...">
@@ -1087,7 +1127,7 @@
             <input type="number" id="regColis" min="1">
           </div>
           <div class="reg-field">
-            <label data-i18n="f_poids">POIDS BRUT APPROX. (KG) <span class="reg-required">*</span></label>
+            <label data-i18n="f_poids">POIDS BRUT APPROX. TOTAL, TOUS COLIS (KG) <span class="reg-required">*</span></label>
             <input type="number" id="regPoids" min="0">
           </div>
           <div class="reg-field">
@@ -1098,9 +1138,10 @@
             </select>
           </div>
           <div class="reg-field full" id="regBoxesField">
-            <label data-i18n="f_dimensions">DIMENSIONS DES COLIS (PAR BOÎTE)</label>
+            <label data-i18n="f_dimensions">DIMENSIONS (UNE LIGNE PAR COLIS)</label>
+            <p class="reg-box-hint" data-i18n="f_dimensions_hint" style="font-size:12px; color:var(--navy-soft); margin:-2px 0 6px;">Colis identiques ? Entrez la taille une seule fois et indiquez la quantité avec le champ ×.</p>
             <div id="regBoxesWrap"></div>
-            <button type="button" class="btn ghost" id="regAddBoxBtn" data-i18n="f_addbox" style="margin-top:4px;">+ Ajouter une boîte</button>
+            <button type="button" class="btn ghost" id="regAddBoxBtn" data-i18n="f_addbox" style="margin-top:4px;">+ Ajouter un colis</button>
           </div>
           <div class="reg-field">
             <label data-i18n="f_volume">VOLUME TOTAL (M³)</label>
@@ -1236,10 +1277,11 @@ const translations = {
     reg_sub: "Remplissez ces informations une seule fois — cela nous évite plusieurs échanges pour préparer votre devis. Une fois envoyé, votre message s'ouvre pré-rempli dans votre email ou WhatsApp ; il vous suffit de l'envoyer.",
     f_name: "NOM / SOCIÉTÉ *", f_phone: "TÉLÉPHONE / WHATSAPP *", f_email: "EMAIL *",
     f_city: "VILLE DE DÉPART *", f_dest: "DESTINATION *", f_date: "DATE D'EXPÉDITION SOUHAITÉE",
-    f_nature: "NATURE DE LA MARCHANDISE *", f_colis: "NOMBRE DE COLIS", f_poids: "POIDS BRUT APPROX. (KG) *",
+    f_nature: "NATURE DE LA MARCHANDISE *", f_colis: "NOMBRE DE COLIS", f_poids: "POIDS BRUT APPROX. TOTAL, TOUS COLIS (KG) *",
     f_dimunit: "UNITÉ DES DIMENSIONS", unit_cm: "Centimètres (cm)", unit_m: "Mètres (m)",
     f_longueur: "LONGUEUR", f_largeur: "LARGEUR", f_hauteur: "HAUTEUR",
-    f_dimensions: "DIMENSIONS DES COLIS (PAR BOÎTE)", f_addbox: "+ Ajouter une boîte", f_removebox: "Retirer",
+    f_dimensions: "DIMENSIONS (UNE LIGNE PAR COLIS)", f_addbox: "+ Ajouter un colis", f_removebox: "Retirer",
+    f_dimensions_hint: "Colis identiques ? Entrez la taille une seule fois et indiquez la quantité avec le champ ×.",
     f_volume: "VOLUME TOTAL (M³)", f_gerbable: "MARCHANDISE GERBABLE ? *",
     gerbable_select: "-- Sélectionner --", gerbable_yes: "Oui", gerbable_no: "Non",
     f_ice: "ICE (SI SOCIÉTÉ)", f_notes: "NOTES COMPLÉMENTAIRES",
@@ -1324,10 +1366,11 @@ const translations = {
     reg_sub: "Fill this in once — it saves us a few rounds of back-and-forth to prepare your quote. Once sent, your message opens pre-filled in your email or WhatsApp app; just hit send.",
     f_name: "NAME / COMPANY *", f_phone: "PHONE / WHATSAPP *", f_email: "EMAIL *",
     f_city: "DEPARTURE CITY *", f_dest: "DESTINATION *", f_date: "REQUESTED SHIPPING DATE",
-    f_nature: "NATURE OF GOODS *", f_colis: "NUMBER OF PACKAGES", f_poids: "APPROX. GROSS WEIGHT (KG) *",
+    f_nature: "NATURE OF GOODS *", f_colis: "NUMBER OF PACKAGES", f_poids: "APPROX. TOTAL GROSS WEIGHT, ALL PACKAGES (KG) *",
     f_dimunit: "DIMENSION UNIT", unit_cm: "Centimeters (cm)", unit_m: "Meters (m)",
     f_longueur: "LENGTH", f_largeur: "WIDTH", f_hauteur: "HEIGHT",
-    f_dimensions: "PACKAGE DIMENSIONS (PER BOX)", f_addbox: "+ Add a box", f_removebox: "Remove",
+    f_dimensions: "DIMENSIONS (ONE LINE PER PACKAGE)", f_addbox: "+ Add a package", f_removebox: "Remove",
+    f_dimensions_hint: "Identical packages? Enter the size once and set how many with the × field.",
     f_volume: "TOTAL VOLUME (M³)", f_gerbable: "STACKABLE GOODS? *",
     gerbable_select: "-- Select --", gerbable_yes: "Yes", gerbable_no: "No",
     f_ice: "ICE (BUSINESS ID, IF APPLICABLE)", f_notes: "ADDITIONAL NOTES",
@@ -1412,10 +1455,11 @@ const translations = {
     reg_sub: "املأوا هذه المعلومات مرة واحدة — يوفر ذلك علينا عدة تبادلات لتحضير عرض السعر. بمجرد الإرسال، تفتح رسالتكم جاهزة في تطبيق البريد الإلكتروني أو واتساب، ولا يبقى لكم سوى إرسالها.",
     f_name: "الاسم / الشركة *", f_phone: "الهاتف / واتساب *", f_email: "البريد الإلكتروني *",
     f_city: "مدينة الانطلاق *", f_dest: "الوجهة *", f_date: "تاريخ الشحن المطلوب",
-    f_nature: "نوع البضاعة *", f_colis: "عدد الطرود", f_poids: "الوزن الإجمالي التقريبي (كغ) *",
+    f_nature: "نوع البضاعة *", f_colis: "عدد الطرود", f_poids: "الوزن الإجمالي التقريبي لجميع الطرود (كغ) *",
     f_dimunit: "وحدة القياس", unit_cm: "سنتيمتر (سم)", unit_m: "متر (م)",
     f_longueur: "الطول", f_largeur: "العرض", f_hauteur: "الارتفاع",
-    f_dimensions: "أبعاد الطرود (لكل صندوق)", f_addbox: "+ إضافة صندوق", f_removebox: "إزالة",
+    f_dimensions: "الأبعاد (سطر لكل طرد)", f_addbox: "+ إضافة طرد", f_removebox: "إزالة",
+    f_dimensions_hint: "طرود متطابقة؟ أدخلوا الحجم مرة واحدة وحددوا العدد في حقل ×.",
     f_volume: "الحجم الإجمالي (م³)", f_gerbable: "هل البضاعة قابلة للتكديس؟ *",
     gerbable_select: "-- اختر --", gerbable_yes: "نعم", gerbable_no: "لا",
     f_ice: "ICE (إن وجدت الشركة)", f_notes: "ملاحظات إضافية",
@@ -1507,7 +1551,7 @@ const regLabels = {
     dest:"Destination", date:"Date d'expédition souhaitée", nature:"Nature de la marchandise",
     colis:"Nombre de colis", poids:"Poids brut approx. (kg)",
     longueur:"Longueur (cm)", largeur:"Largeur (cm)", hauteur:"Hauteur (cm)", volume:"Volume total (m³)",
-    box:"Boîte", gerbable:"Marchandise gerbable", ice:"ICE", notes:"Notes complémentaires",
+    box:"Colis", gerbable:"Marchandise gerbable", ice:"ICE", notes:"Notes complémentaires",
     subject:"Nouvelle demande de devis", intro:"Nouvelle demande de devis reçue depuis le site :",
     na:"Non précisé",
     successTitle:"Merci ! Votre demande a bien été préparée.",
@@ -1519,7 +1563,7 @@ const regLabels = {
     dest:"Destination", date:"Requested shipping date", nature:"Nature of goods",
     colis:"Number of packages", poids:"Approx. gross weight (kg)",
     longueur:"Length (cm)", largeur:"Width (cm)", hauteur:"Height (cm)", volume:"Total volume (m³)",
-    box:"Box", gerbable:"Stackable goods", ice:"ICE (business ID)", notes:"Additional notes",
+    box:"Package", gerbable:"Stackable goods", ice:"ICE (business ID)", notes:"Additional notes",
     subject:"New quote request", intro:"New quote request received from the website:",
     na:"Not specified",
     successTitle:"Thank you! Your request has been prepared.",
@@ -1531,7 +1575,7 @@ const regLabels = {
     dest:"الوجهة", date:"تاريخ الشحن المطلوب", nature:"نوع البضاعة",
     colis:"عدد الطرود", poids:"الوزن الإجمالي التقريبي (كغ)",
     longueur:"الطول (سم)", largeur:"العرض (سم)", hauteur:"الارتفاع (سم)", volume:"الحجم الإجمالي (م³)",
-    box:"صندوق", gerbable:"قابلة للتكديس", ice:"ICE", notes:"ملاحظات إضافية",
+    box:"طرد", gerbable:"قابلة للتكديس", ice:"ICE", notes:"ملاحظات إضافية",
     subject:"طلب عرض سعر جديد", intro:"تم استلام طلب عرض سعر جديد من الموقع:",
     na:"غير محدد",
     successTitle:"شكرًا! تم إعداد طلبكم.",
@@ -1553,11 +1597,18 @@ function regBoxRowHtml(idx){
   const L = regLabels[currentLang] || regLabels.fr;
   const removeLabel = (document.querySelector('[data-i18n="f_removebox"]') || {}).textContent
     || (currentLang === 'en' ? 'Remove' : currentLang === 'ar' ? 'إزالة' : 'Retirer');
+  const qtyTitle = currentLang === 'en' ? 'Number of identical packages of this size'
+    : currentLang === 'ar' ? 'عدد الطرود المتطابقة بهذا الحجم'
+    : 'Nombre de colis identiques de cette taille';
   return '' +
-    '<div class="reg-box-row" data-box="' + idx + '" style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:center; margin-bottom:6px;">' +
+    '<div class="reg-box-row" data-box="' + idx + '">' +
       '<input type="number" class="reg-box-l" min="0" step="0.01" placeholder="' + L.longueur.replace(' (cm)','') + '">' +
       '<input type="number" class="reg-box-w" min="0" step="0.01" placeholder="' + L.largeur.replace(' (cm)','') + '">' +
       '<input type="number" class="reg-box-h" min="0" step="0.01" placeholder="' + L.hauteur.replace(' (cm)','') + '">' +
+      '<span class="reg-box-qty-wrap" title="' + qtyTitle + '">' +
+        '<span class="reg-box-qty-x">×</span>' +
+        '<input type="number" class="reg-box-qty" min="1" step="1" value="1">' +
+      '</span>' +
       '<button type="button" class="reg-box-remove btn small ghost" title="' + removeLabel + '">✕</button>' +
     '</div>';
 }
@@ -1592,8 +1643,11 @@ function regSyncRemoveButtons(){
   });
 }
 
-// Reads every box row into {longueur, largeur, hauteur} (raw, in whatever
-// unit regDimUnit currently is), skipping rows left completely empty.
+// Reads every box row into {longueur, largeur, hauteur, count} (raw, in
+// whatever unit regDimUnit currently is), skipping rows left completely
+// empty. `count` is the "×" smart-dimensions field - how many identical
+// boxes of that exact size, so a visitor with 3 identical boxes fills in
+// one row with count=3 instead of pasting the same dimensions three times.
 function regReadBoxes(){
   const rows = document.getElementById('regBoxesWrap').querySelectorAll('.reg-box-row');
   const boxes = [];
@@ -1601,7 +1655,9 @@ function regReadBoxes(){
     const l = row.querySelector('.reg-box-l').value.trim();
     const w = row.querySelector('.reg-box-w').value.trim();
     const h = row.querySelector('.reg-box-h').value.trim();
-    if(l || w || h) boxes.push({ longueur: l, largeur: w, hauteur: h });
+    const qtyRaw = parseInt(row.querySelector('.reg-box-qty').value, 10);
+    const count = Number.isFinite(qtyRaw) && qtyRaw > 1 ? qtyRaw : 1;
+    if(l || w || h) boxes.push({ longueur: l, largeur: w, hauteur: h, count });
   });
   return boxes;
 }
@@ -1613,6 +1669,8 @@ function regResetBoxes(){
 }
 
 // Total volume across every box, in m³, shown read-only in regVolume.
+// Each row's volume is multiplied by its own "×" quantity, so 3 identical
+// 1m³ boxes entered as one row with count=3 still count as 3m³ total.
 function recomputeRegVolume(){
   const unit = document.getElementById('regDimUnit').value; // 'cm' | 'm'
   const volumeEl = document.getElementById('regVolume');
@@ -1622,7 +1680,7 @@ function recomputeRegVolume(){
     const l = parseFloat(b.longueur) || 0, w = parseFloat(b.largeur) || 0, h = parseFloat(b.hauteur) || 0;
     if(l > 0 && w > 0 && h > 0){
       const cubic = l * w * h;
-      totalM3 += (unit === 'cm') ? (cubic / 1000000) : cubic;
+      totalM3 += ((unit === 'cm') ? (cubic / 1000000) : cubic) * (b.count || 1);
       any = true;
     }
   });
@@ -1649,13 +1707,15 @@ function submitRegistration(channel){
   const poids = val('regPoids');
   const dimUnit = document.getElementById('regDimUnit').value; // 'cm' | 'm'
   const dimUnitLabel = dimUnit === 'm' ? 'm' : 'cm';
-  const boxesRaw = regReadBoxes(); // [{longueur, largeur, hauteur}, ...] in whatever unit regDimUnit is
+  const boxesRaw = regReadBoxes(); // [{longueur, largeur, hauteur, count}, ...] in whatever unit regDimUnit is
   const volume = val('regVolume'); // total, always m³
   // Normalize every box to cm for the backend/database, regardless of what
   // the visitor picked, so stored dimensions are always in the same unit.
+  // `count` (the "×" smart-dimensions field) passes straight through - the
+  // backend groups/sums it, see src/services/dimensions.js.
   const toCm = v => v ? (dimUnit === 'm' ? (parseFloat(v) * 100) : parseFloat(v)) : '';
   const dimensions = boxesRaw
-    .map(b => ({ longueur: toCm(b.longueur), largeur: toCm(b.largeur), hauteur: toCm(b.hauteur) }))
+    .map(b => ({ longueur: toCm(b.longueur), largeur: toCm(b.largeur), hauteur: toCm(b.hauteur), count: b.count }))
     .filter(b => b.longueur && b.largeur && b.hauteur);
   // Legacy single-box columns (first box), kept for older parts of the
   // backend/reports that only know about longueur/largeur/hauteur.
@@ -1703,7 +1763,7 @@ function submitRegistration(channel){
   // whatever unit the visitor picked), or a single "non précisé" line if
   // every box was left empty.
   const boxLines = boxesRaw.length
-    ? boxesRaw.map((b, i) => `${L.box} ${i + 1}: ${b.longueur || '—'} x ${b.largeur || '—'} x ${b.hauteur || '—'} ${dimUnitLabel}`)
+    ? boxesRaw.map((b, i) => `${L.box} ${i + 1}: ${b.longueur || '—'} x ${b.largeur || '—'} x ${b.hauteur || '—'} ${dimUnitLabel}${b.count > 1 ? ` x${b.count}` : ''}`)
     : [`${L.box} 1: ${L.na}`];
   const lines = [
     L.intro, '',

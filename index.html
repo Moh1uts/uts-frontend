@@ -1097,20 +1097,13 @@
               <option value="m" data-i18n="unit_m">Mètres (m)</option>
             </select>
           </div>
-          <div class="reg-field">
-            <label data-i18n="f_longueur">LONGUEUR</label>
-            <input type="number" id="regLongueur" min="0" step="0.01">
+          <div class="reg-field full" id="regBoxesField">
+            <label data-i18n="f_dimensions">DIMENSIONS DES COLIS (PAR BOÎTE)</label>
+            <div id="regBoxesWrap"></div>
+            <button type="button" class="btn ghost" id="regAddBoxBtn" data-i18n="f_addbox" style="margin-top:4px;">+ Ajouter une boîte</button>
           </div>
           <div class="reg-field">
-            <label data-i18n="f_largeur">LARGEUR</label>
-            <input type="number" id="regLargeur" min="0" step="0.01">
-          </div>
-          <div class="reg-field">
-            <label data-i18n="f_hauteur">HAUTEUR</label>
-            <input type="number" id="regHauteur" min="0" step="0.01">
-          </div>
-          <div class="reg-field">
-            <label data-i18n="f_volume">VOLUME (M³)</label>
+            <label data-i18n="f_volume">VOLUME TOTAL (M³)</label>
             <input type="text" id="regVolume" readonly style="background:#f2f2f2; cursor:not-allowed;">
           </div>
           <div class="reg-field">
@@ -1246,7 +1239,8 @@ const translations = {
     f_nature: "NATURE DE LA MARCHANDISE *", f_colis: "NOMBRE DE COLIS", f_poids: "POIDS BRUT APPROX. (KG) *",
     f_dimunit: "UNITÉ DES DIMENSIONS", unit_cm: "Centimètres (cm)", unit_m: "Mètres (m)",
     f_longueur: "LONGUEUR", f_largeur: "LARGEUR", f_hauteur: "HAUTEUR",
-    f_volume: "VOLUME (M³)", f_gerbable: "MARCHANDISE GERBABLE ? *",
+    f_dimensions: "DIMENSIONS DES COLIS (PAR BOÎTE)", f_addbox: "+ Ajouter une boîte", f_removebox: "Retirer",
+    f_volume: "VOLUME TOTAL (M³)", f_gerbable: "MARCHANDISE GERBABLE ? *",
     gerbable_select: "-- Sélectionner --", gerbable_yes: "Oui", gerbable_no: "Non",
     f_ice: "ICE (SI SOCIÉTÉ)", f_notes: "NOTES COMPLÉMENTAIRES",
     city_casa: "Casablanca", city_mar: "Marrakech", city_fes: "Fès", city_tan: "Tanger", city_rab: "Rabat", city_other: "Autre",
@@ -1333,7 +1327,8 @@ const translations = {
     f_nature: "NATURE OF GOODS *", f_colis: "NUMBER OF PACKAGES", f_poids: "APPROX. GROSS WEIGHT (KG) *",
     f_dimunit: "DIMENSION UNIT", unit_cm: "Centimeters (cm)", unit_m: "Meters (m)",
     f_longueur: "LENGTH", f_largeur: "WIDTH", f_hauteur: "HEIGHT",
-    f_volume: "VOLUME (M³)", f_gerbable: "STACKABLE GOODS? *",
+    f_dimensions: "PACKAGE DIMENSIONS (PER BOX)", f_addbox: "+ Add a box", f_removebox: "Remove",
+    f_volume: "TOTAL VOLUME (M³)", f_gerbable: "STACKABLE GOODS? *",
     gerbable_select: "-- Select --", gerbable_yes: "Yes", gerbable_no: "No",
     f_ice: "ICE (BUSINESS ID, IF APPLICABLE)", f_notes: "ADDITIONAL NOTES",
     city_casa: "Casablanca", city_mar: "Marrakech", city_fes: "Fez", city_tan: "Tangier", city_rab: "Rabat", city_other: "Other",
@@ -1420,7 +1415,8 @@ const translations = {
     f_nature: "نوع البضاعة *", f_colis: "عدد الطرود", f_poids: "الوزن الإجمالي التقريبي (كغ) *",
     f_dimunit: "وحدة القياس", unit_cm: "سنتيمتر (سم)", unit_m: "متر (م)",
     f_longueur: "الطول", f_largeur: "العرض", f_hauteur: "الارتفاع",
-    f_volume: "الحجم (م³)", f_gerbable: "هل البضاعة قابلة للتكديس؟ *",
+    f_dimensions: "أبعاد الطرود (لكل صندوق)", f_addbox: "+ إضافة صندوق", f_removebox: "إزالة",
+    f_volume: "الحجم الإجمالي (م³)", f_gerbable: "هل البضاعة قابلة للتكديس؟ *",
     gerbable_select: "-- اختر --", gerbable_yes: "نعم", gerbable_no: "لا",
     f_ice: "ICE (إن وجدت الشركة)", f_notes: "ملاحظات إضافية",
     city_casa: "الدار البيضاء", city_mar: "مراكش", city_fes: "فاس", city_tan: "طنجة", city_rab: "الرباط", city_other: "أخرى",
@@ -1510,8 +1506,8 @@ const regLabels = {
     name:"Nom / Société", phone:"Téléphone / WhatsApp", email:"Email", city:"Ville de départ",
     dest:"Destination", date:"Date d'expédition souhaitée", nature:"Nature de la marchandise",
     colis:"Nombre de colis", poids:"Poids brut approx. (kg)",
-    longueur:"Longueur (cm)", largeur:"Largeur (cm)", hauteur:"Hauteur (cm)", volume:"Volume (m³)",
-    gerbable:"Marchandise gerbable", ice:"ICE", notes:"Notes complémentaires",
+    longueur:"Longueur (cm)", largeur:"Largeur (cm)", hauteur:"Hauteur (cm)", volume:"Volume total (m³)",
+    box:"Boîte", gerbable:"Marchandise gerbable", ice:"ICE", notes:"Notes complémentaires",
     subject:"Nouvelle demande de devis", intro:"Nouvelle demande de devis reçue depuis le site :",
     na:"Non précisé",
     successTitle:"Merci ! Votre demande a bien été préparée.",
@@ -1522,8 +1518,8 @@ const regLabels = {
     name:"Name / Company", phone:"Phone / WhatsApp", email:"Email", city:"Departure city",
     dest:"Destination", date:"Requested shipping date", nature:"Nature of goods",
     colis:"Number of packages", poids:"Approx. gross weight (kg)",
-    longueur:"Length (cm)", largeur:"Width (cm)", hauteur:"Height (cm)", volume:"Volume (m³)",
-    gerbable:"Stackable goods", ice:"ICE (business ID)", notes:"Additional notes",
+    longueur:"Length (cm)", largeur:"Width (cm)", hauteur:"Height (cm)", volume:"Total volume (m³)",
+    box:"Box", gerbable:"Stackable goods", ice:"ICE (business ID)", notes:"Additional notes",
     subject:"New quote request", intro:"New quote request received from the website:",
     na:"Not specified",
     successTitle:"Thank you! Your request has been prepared.",
@@ -1534,8 +1530,8 @@ const regLabels = {
     name:"الاسم / الشركة", phone:"الهاتف / واتساب", email:"البريد الإلكتروني", city:"مدينة الانطلاق",
     dest:"الوجهة", date:"تاريخ الشحن المطلوب", nature:"نوع البضاعة",
     colis:"عدد الطرود", poids:"الوزن الإجمالي التقريبي (كغ)",
-    longueur:"الطول (سم)", largeur:"العرض (سم)", hauteur:"الارتفاع (سم)", volume:"الحجم (م³)",
-    gerbable:"قابلة للتكديس", ice:"ICE", notes:"ملاحظات إضافية",
+    longueur:"الطول (سم)", largeur:"العرض (سم)", hauteur:"الارتفاع (سم)", volume:"الحجم الإجمالي (م³)",
+    box:"صندوق", gerbable:"قابلة للتكديس", ice:"ICE", notes:"ملاحظات إضافية",
     subject:"طلب عرض سعر جديد", intro:"تم استلام طلب عرض سعر جديد من الموقع:",
     na:"غير محدد",
     successTitle:"شكرًا! تم إعداد طلبكم.",
@@ -1546,25 +1542,96 @@ const regLabels = {
 
 let regSubmitInProgress = false;
 
-// Longueur x Largeur x Hauteur can be entered in cm or m (regDimUnit); volume
-// is always auto-computed and shown in m³, read-only.
+// Multi-box dimensions: a visitor with several boxes clicks "+ Ajouter une
+// boîte" to get another Longueur/Largeur/Hauteur row. Every box shares the
+// same unit (regDimUnit, cm or m); regVolume shows the TOTAL volume summed
+// across every box, auto-computed and read-only. Box rows are plain DOM
+// elements (no framework), tracked by a simple counter for unique ids.
+let regBoxCount = 0;
+
+function regBoxRowHtml(idx){
+  const L = regLabels[currentLang] || regLabels.fr;
+  const removeLabel = (document.querySelector('[data-i18n="f_removebox"]') || {}).textContent
+    || (currentLang === 'en' ? 'Remove' : currentLang === 'ar' ? 'إزالة' : 'Retirer');
+  return '' +
+    '<div class="reg-box-row" data-box="' + idx + '" style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:center; margin-bottom:6px;">' +
+      '<input type="number" class="reg-box-l" min="0" step="0.01" placeholder="' + L.longueur.replace(' (cm)','') + '">' +
+      '<input type="number" class="reg-box-w" min="0" step="0.01" placeholder="' + L.largeur.replace(' (cm)','') + '">' +
+      '<input type="number" class="reg-box-h" min="0" step="0.01" placeholder="' + L.hauteur.replace(' (cm)','') + '">' +
+      '<button type="button" class="reg-box-remove btn small ghost" title="' + removeLabel + '">✕</button>' +
+    '</div>';
+}
+
+function regAddBox(){
+  const wrap = document.getElementById('regBoxesWrap');
+  const row = document.createElement('div');
+  row.innerHTML = regBoxRowHtml(regBoxCount++);
+  const el = row.firstElementChild;
+  wrap.appendChild(el);
+  el.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', recomputeRegVolume);
+    inp.addEventListener('change', recomputeRegVolume);
+  });
+  el.querySelector('.reg-box-remove').addEventListener('click', () => {
+    // Always keep at least one row - a visitor with one box shouldn't be
+    // able to end up with zero dimension fields to fill in.
+    const rows = wrap.querySelectorAll('.reg-box-row');
+    if(rows.length <= 1) return;
+    el.remove();
+    regSyncRemoveButtons();
+    recomputeRegVolume();
+  });
+  regSyncRemoveButtons();
+  recomputeRegVolume();
+}
+
+function regSyncRemoveButtons(){
+  const rows = document.getElementById('regBoxesWrap').querySelectorAll('.reg-box-row');
+  rows.forEach(row => {
+    row.querySelector('.reg-box-remove').style.display = rows.length > 1 ? '' : 'none';
+  });
+}
+
+// Reads every box row into {longueur, largeur, hauteur} (raw, in whatever
+// unit regDimUnit currently is), skipping rows left completely empty.
+function regReadBoxes(){
+  const rows = document.getElementById('regBoxesWrap').querySelectorAll('.reg-box-row');
+  const boxes = [];
+  rows.forEach(row => {
+    const l = row.querySelector('.reg-box-l').value.trim();
+    const w = row.querySelector('.reg-box-w').value.trim();
+    const h = row.querySelector('.reg-box-h').value.trim();
+    if(l || w || h) boxes.push({ longueur: l, largeur: w, hauteur: h });
+  });
+  return boxes;
+}
+
+function regResetBoxes(){
+  document.getElementById('regBoxesWrap').innerHTML = '';
+  regBoxCount = 0;
+  regAddBox();
+}
+
+// Total volume across every box, in m³, shown read-only in regVolume.
 function recomputeRegVolume(){
-  const num = id => parseFloat(document.getElementById(id).value) || 0;
-  const l = num('regLongueur'), w = num('regLargeur'), h = num('regHauteur');
   const unit = document.getElementById('regDimUnit').value; // 'cm' | 'm'
   const volumeEl = document.getElementById('regVolume');
-  if(l > 0 && w > 0 && h > 0){
-    const cubic = l * w * h; // in the chosen unit, cubed
-    const m3 = (unit === 'cm') ? (cubic / 1000000) : cubic;
-    volumeEl.value = m3.toFixed(3);
-  } else {
-    volumeEl.value = '';
-  }
+  let totalM3 = 0;
+  let any = false;
+  regReadBoxes().forEach(b => {
+    const l = parseFloat(b.longueur) || 0, w = parseFloat(b.largeur) || 0, h = parseFloat(b.hauteur) || 0;
+    if(l > 0 && w > 0 && h > 0){
+      const cubic = l * w * h;
+      totalM3 += (unit === 'cm') ? (cubic / 1000000) : cubic;
+      any = true;
+    }
+  });
+  volumeEl.value = any ? totalM3.toFixed(3) : '';
 }
-['regLongueur','regLargeur','regHauteur','regDimUnit'].forEach(id => {
-  const el = document.getElementById(id);
-  if(el){ el.addEventListener('input', recomputeRegVolume); el.addEventListener('change', recomputeRegVolume); }
-});
+
+document.getElementById('regAddBoxBtn').addEventListener('click', regAddBox);
+document.getElementById('regDimUnit').addEventListener('change', recomputeRegVolume);
+regAddBox(); // start with a single box row
 
 function submitRegistration(channel){
   if(regSubmitInProgress) return; // ignore rapid repeat clicks (prevents duplicate leads)
@@ -1582,16 +1649,19 @@ function submitRegistration(channel){
   const poids = val('regPoids');
   const dimUnit = document.getElementById('regDimUnit').value; // 'cm' | 'm'
   const dimUnitLabel = dimUnit === 'm' ? 'm' : 'cm';
-  const longueurRaw = val('regLongueur');
-  const largeurRaw = val('regLargeur');
-  const hauteurRaw = val('regHauteur');
-  const volume = val('regVolume');
-  // Normalize to cm for the backend/database, regardless of what the visitor picked,
-  // so stored dimensions are always in the same unit.
+  const boxesRaw = regReadBoxes(); // [{longueur, largeur, hauteur}, ...] in whatever unit regDimUnit is
+  const volume = val('regVolume'); // total, always m³
+  // Normalize every box to cm for the backend/database, regardless of what
+  // the visitor picked, so stored dimensions are always in the same unit.
   const toCm = v => v ? (dimUnit === 'm' ? (parseFloat(v) * 100) : parseFloat(v)) : '';
-  const longueur = toCm(longueurRaw);
-  const largeur = toCm(largeurRaw);
-  const hauteur = toCm(hauteurRaw);
+  const dimensions = boxesRaw
+    .map(b => ({ longueur: toCm(b.longueur), largeur: toCm(b.largeur), hauteur: toCm(b.hauteur) }))
+    .filter(b => b.longueur && b.largeur && b.hauteur);
+  // Legacy single-box columns (first box), kept for older parts of the
+  // backend/reports that only know about longueur/largeur/hauteur.
+  const longueur = dimensions[0] ? dimensions[0].longueur : '';
+  const largeur = dimensions[0] ? dimensions[0].largeur : '';
+  const hauteur = dimensions[0] ? dimensions[0].hauteur : '';
   const gerbable = document.getElementById('regGerbable').value;
   const ice = val('regIce');
   const notes = val('regNotes');
@@ -1625,10 +1695,16 @@ function submitRegistration(channel){
   fetch(BACKEND_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
-    body: JSON.stringify({ name, phone, email, city, destination: dest, preferredDate: date, nature, packages: colis, weightKg: poids, longueur, largeur, hauteur, volume, gerbable, ice, notes })
+    body: JSON.stringify({ name, phone, email, city, destination: dest, preferredDate: date, nature, packages: colis, weightKg: poids, longueur, largeur, hauteur, dimensions, volume, gerbable, ice, notes })
   }).catch(() => { /* silent - WhatsApp/email fallback below still works */ });
 
   const L = regLabels[currentLang] || regLabels.fr;
+  // One "Boîte N: L x l x H cm" line per box (raw entered values, in
+  // whatever unit the visitor picked), or a single "non précisé" line if
+  // every box was left empty.
+  const boxLines = boxesRaw.length
+    ? boxesRaw.map((b, i) => `${L.box} ${i + 1}: ${b.longueur || '—'} x ${b.largeur || '—'} x ${b.hauteur || '—'} ${dimUnitLabel}`)
+    : [`${L.box} 1: ${L.na}`];
   const lines = [
     L.intro, '',
     `${L.name}: ${name}`,
@@ -1640,9 +1716,7 @@ function submitRegistration(channel){
     `${L.nature}: ${nature}`,
     `${L.colis}: ${colis || L.na}`,
     `${L.poids}: ${poids}`,
-    `${L.longueur}: ${longueurRaw ? longueurRaw + ' ' + dimUnitLabel : L.na}`,
-    `${L.largeur}: ${largeurRaw ? largeurRaw + ' ' + dimUnitLabel : L.na}`,
-    `${L.hauteur}: ${hauteurRaw ? hauteurRaw + ' ' + dimUnitLabel : L.na}`,
+    ...boxLines,
     `${L.volume}: ${volume || L.na}`,
     `${L.gerbable}: ${gerbable || L.na}`,
     `${L.ice}: ${ice || L.na}`,
@@ -1676,13 +1750,14 @@ function submitRegistration(channel){
   // back (this is a single-page app, so the DOM/state persists - it's not a
   // fresh page load) shows a clean, ready-to-fill form instead of the old
   // values with the buttons stuck disabled.
-  ['regName','regPhoneNumber','regEmail','regDest','regDate','regNature','regColis','regPoids','regLongueur','regLargeur','regHauteur','regVolume','regIce','regNotes'].forEach(id => {
+  ['regName','regPhoneNumber','regEmail','regDest','regDate','regNature','regColis','regPoids','regVolume','regIce','regNotes'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('regCity').selectedIndex = 0;
   document.getElementById('regPhoneCode').selectedIndex = 0;
   document.getElementById('regGerbable').selectedIndex = 0;
   document.getElementById('regDimUnit').selectedIndex = 0;
+  regResetBoxes();
   regSubmitInProgress = false;
   waBtn.disabled = false;
   emailBtn.disabled = false;
